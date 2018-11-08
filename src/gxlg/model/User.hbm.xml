@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping SYSTEM 
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gxlg.model.User" table="TUSER">
+		<id name="username" column="USERNAME" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="password" type="java.lang.String" column="PASSWORD" />
+		<property name="email" type="string" column="EMAIL" />
+		<property name="birthday" type="date" column="BIRTHDAY" />
+				
+	</class>
+		
+</hibernate-mapping>

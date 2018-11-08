@@ -1,0 +1,15 @@
+<!DOCTYPE validators PUBLIC "-//Apache Struts//XWork Validator 1.0//EN" 
+				"http://struts.apache.org/dtds/xwork-validator-1.0.dtd">
+<validators>
+	<!-- 修改用户名验证 -->
+	<field name="user.username">
+		<field-validator type="stringlength">
+			<param name="minLength">1</param>
+			<param name="maxLength">8</param>
+			<message>用户名长度须在${minLength}-${maxLength}位之间</message>
+		</field-validator>
+		<field-validator type="requiredstring">
+			<message>用户名不允许为空！</message>
+		</field-validator>
+	</field>
+</validators>

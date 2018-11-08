@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE validators PUBLIC "-//Apache Struts//XWork Validator 1.0//EN" "http://struts.apache.org/dtds/xwork-validator-1.0.dtd">
+<validators>
+	<!-- 注册用户名验证 -->
+	<field name="user.username">
+		<field-validator type="stringlength">
+			<param name="minLength">1</param>
+			<param name="maxLength">8</param>
+			<message>用户名长度须在${minLength}-${maxLength}位之间</message>
+		</field-validator>
+		<field-validator type="requiredstring">
+			<message>用户名不允许为空！</message>
+		</field-validator>
+	</field>
+	
+	<!-- 注册密码验证 -->
+	<field name="user.password">
+		<field-validator type="stringlength">
+			<param name="minLength">1</param>
+			<param name="maxLength">8</param>
+			<message>密码长度须在${minLength}-${maxLength}位之间</message>
+		</field-validator>
+		<field-validator type="requiredstring">
+			<message>密码不允许为空！</message>
+		</field-validator>
+	</field>
+	
+	<!-- 注册确认密码验证 -->
+	<field name="user.confirm">
+		<field-validator type="stringlength">
+			<param name="minLength">1</param>
+			<param name="maxLength">8</param>
+			<message>确认密码长度须在${minLength}-${maxLength}位之间</message>
+		</field-validator>
+		<field-validator type="requiredstring">
+			<message>密码不允许为空！</message>
+		</field-validator>
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[user.password==user.confirm]]></param>
+			<message>确认密码与密码不一致！</message>
+		</field-validator>
+	</field>
+	
+	<!-- 注册邮箱验证 -->
+	<field name="user.email">
+		<field-validator type="email">
+			<message>请输入正确的电子邮箱格式</message>
+		</field-validator>
+		<field-validator type="requiredstring">
+			<message>邮箱不允许为空！</message>
+		</field-validator>
+	</field>
+	
+	<!-- 注册邮箱验证 -->
+	<field name="user.birthday">
+		<field-validator type="required">
+			<message>请输入生日日期</message>
+		</field-validator>
+		<field-validator type="date">
+			<param name="min">19280101</param>
+			<message>生日必须在${min}之后。</message>
+		</field-validator>
+		<field-validator type="conversion">
+			<message>生日格式不符合要求！</message>
+		</field-validator>
+	</field>
+</validators>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+
+<struts>
+
+	<!-- 为Struts2标题设置主题 -->
+	<constant name="struts.ui.theme" value="css_xhtml"></constant>
+	
+	<!-- 设置action的访问方式为，后缀名为.do的方式，相应的form表单也提交的action也为XX.do -->
+	<!-- 多个后缀名用，隔开 -->
+	<constant name="struts.action.extension" value="action,do"></constant>
+	
+	<!-- 处理多个请求方法，动态方法调用，true开启，false不开启 -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="false"></constant>
+
+	<!-- package一定要有 name值自定义 继承struts-default为了使用拦截器 -->
+	<!-- namespacew为命名空间，action的访问方式，/user/XX.action -->
+	<!-- 默认的命名空间是设置为空，根目录是 -->
+	<!-- <package name="user" extends="struts-default" namespace="/user"> -->
+	
+	<!--指定objectFactory 为spring，把action的生命周期管理交给spring进行  -->
+	<!-- <constant name="struts.objectFactory" value="spring"/> -->
+	<!-- 开发模式 -->
+	<constant name="struts.devMode" value="true"></constant>
+	
+	<package name="user" namespace='/' extends="struts-default">
+
+		<!-- 
+			<interceptors> 
+				自定义身份验证拦截器
+			    <interceptor name="auth" class="gxlg.UserActionInterceptor"></interceptor> 
+				<interceptor-stack name="securityStack"> <interceptor-ref name="auth"></interceptor-ref> 
+				<interceptor-ref name="defaultStack"></interceptor-ref> </interceptor-stack> 
+			</interceptors> 
+		-->
+
+		<!-- 登录 
+   			class是包名加类名
+   			method:处理多请求方式，为action设置method方法
+   			class:为Spring配置文件中的id
+   		 -->
+		<action name="user_login" class="userAction" method="login">
+			<!-- 
+				视图，局部结果，将result配置成为action的子元素
+   				全局结果：将<result>元素作为<global-results>元素的子元素配置 
+   			 -->
+   			<!--
+   				redirectAction用于重定向到其他noticeList Action 
+   				如果希望将重定向到另一个Action，必须使用redirectAction结果类型
+   			 -->	
+			<result type="redirectAction">noticeList</result>
+			<!-- 默认：dispatcher 请求转发 -->		
+			<result name="error">/login.jsp</result>
+			<result name="input">/login.jsp</result>
+			<!-- 引用自定义身份认证拦截器 -->
+			<!-- <interceptor-ref name="securityStack"></interceptor-ref> -->
+		</action>
+
+		<!-- 注册 -->
+		<action name="user_register" class="userAction" method="register">
+			<!-- 防止多次提交的拦截器 -->
+			<!-- 
+				<interceptor-ref name="defaultStack"></interceptor-ref> 
+				<interceptor-ref name="token"></interceptor-ref> 
+			-->
+			<result name="input">/register.jsp</result>
+			<result name="error">/register.jsp</result>
+			<result name="success">/login.jsp</result>
+		</action>
+
+		<!-- 修改密码 -->
+		<action name="user_repassword" class="userAction" method="repassword">
+			<result name="success">/login.jsp</result>
+			<result name="error">/repassword.jsp</result>
+			<result name="input">/repassword.jsp</result>
+		</action>
+
+		<!-- 找回密码 -->
+		<action name="user_retake" class="userAction" method="retake">
+			<result name="input">/login.jsp</result>
+			<result name="toretake">/retake.jsp</result>
+			<result name="error">/login.jsp</result>
+		</action>
+
+		<!-- 通知列表 -->
+		<action name="noticeList" class="gxlg.controller.NoticeAction" method="getNotices">
+			<!-- redirect用于重定向到其他URL -->
+			<result type="redirect">/welcome.jsp</result>
+		</action>
+		<!-- 通知列表详情 -->
+		<action name="notice_detail" class="gxlg.controller.NoticeAction" method="getDetail">
+			<!-- 定义处理结果与资源之间的映射关系 -->
+			<result>/noticedetail.jsp</result>
+			<!-- redirectAction用于重定向到其他noticeList Action  -->
+			<result name="input" type="redirectAction">noticeList</result>
+		</action>
+
+	</package>
+</struts>

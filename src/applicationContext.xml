@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- 1.配置数据源：SimpleDriverDataSource 
+			为了使用Spring容器链接数据库-->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<property name="url" value="jdbc:mysql:///test?characterEncoding=UTF-8"></property>
+		<property name="username" value="root"></property>
+		<property name="password" value="123"></property>
+	</bean>
+	
+	<!-- 2.配置工厂类，获取session LocalSessionFactory  关联SimpleDriverDataSource
+			为了获取hibernate中的Session对象对数据库进行增删改查操作-->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- hibernate的配置文件 -->
+		<property name="configLocation" value="classpath:hibernate.cfg.xml"></property>
+	</bean>
+	
+	<!-- 3.配置HibernateTemplate，关联LocalSessionFactory 
+			为了使用Spring中对Hibernate5支持的HibernateTemplate模板类对象
+			相当于hibernate5中的Session对象-->
+	<bean id="template" class="org.springframework.orm.hibernate5.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<!-- 4.配置dao, 关联HibernateTemplate -->
+	<bean id="userDao" class="gxlg.dao.impl.UserDao">
+		<!-- 设置属性注入值：
+				name="template"：template是UserDao中创建的对象名
+				ref="template"：为配置配置HibernateTemplate中定义的id名	
+		 -->
+		<property name="template" ref="template"></property>
+	</bean>
+	
+	<!-- 5.配置service 关联dao -->
+	<bean id="userService" class="gxlg.service.impl.UserService">
+		 <!-- 设置属性注入值：
+				name="userDao"：userDao是UserService中创建的对象名
+				ref="userDao"为配置数据持久层中定义的id名	
+		 -->
+		<property name="userDao" ref="userDao"></property>
+	</bean>
+	
+	<!-- 6.配置Action控制器，关联service
+		scope：为bean的作用域
+				1.默认为SingleTon，通常是用于无会话的状态的bean，如数据持久层 类，业务逻辑层类 
+				  单例模式，Spring容器中只有一个bean实例化
+				2.prototype：通常是用于需要保持会话状态的Bean，如Struts2的Action类
+				  new关键字创建Bean实例，new多少个就有多少个 -->
+	<bean id="userAction" class="gxlg.controller.UserAction" scope="prototype">
+		<!-- 设置属性注入值：
+				name="userService"：userService是UserAction中创建的对象名
+				ref="userService"：为配置service中定义的id名	
+		 -->
+		<property name="userService" ref="userService"></property>
+	</bean>
+	<!-- <bean id="NoticeAction" class="gxlg.controller.NoticeAction" scope="prototype">
+		设置属性注入值：
+				name="userService"：userService是UserAction中创建的对象名
+				ref="userService"：为配置service中定义的id名	
+		
+		<property name="userService" ref="userService"></property>
+	</bean> -->
+	
+	<!-- 7.配置事务 HibernateTransactionManager 关联：LocalSessionFactory -->
+	<!-- 7.1配置事务管理器 -->
+	<bean id="txManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<!-- 7.2配置事务属性 -->
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="find*" read-only="true"></tx:method>
+			<tx:method name="*" read-only="false"></tx:method>
+		</tx:attributes>
+	</tx:advice>
+	<!-- 7.3将事务应用于业务方法(导入aspect) -->
+	<!-- AspectJ aop -->
+	<aop:config>
+		<!-- 
+			1.aop:pointcut定义切入点：规则，需要日志的位置
+			2.execution()用于匹配方法执行的连接点
+			3.返回值  方法名 参数 
+			4.id=servicePoint自定义 
+			5.* gxlg.service.impl.UserService.*(..)) 
+				*为通配符
+				意思是：gxlg.service.impl包下的UserService类中的任何方法
+		-->
+		<aop:pointcut id="servicePoint" expression="execution(* gxlg.service.impl.*Service.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="servicePoint"></aop:advisor>
+	</aop:config>
+</beans>		
