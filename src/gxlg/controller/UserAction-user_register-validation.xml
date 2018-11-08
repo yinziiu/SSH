@@ -57,7 +57,7 @@
 			<message>请输入生日日期</message>
 		</field-validator>
 		<field-validator type="date">
-			<param name="min">19280101</param>
+			<param name="min">1928-01-01</param>
 			<message>生日必须在${min}之后。</message>
 		</field-validator>
 		<field-validator type="conversion">

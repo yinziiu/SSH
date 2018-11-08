@@ -59,7 +59,7 @@
 					<s:textfield name="user.birthday" cssStyle="w200" />
 				</td>
 				<td>
-					(格式要求：20010825)
+					(格式要求：2001-08-25)
 					<s:fielderror cssStyle="color:red" fieldName="user.birthday" />
 				</td>
 			</tr>
