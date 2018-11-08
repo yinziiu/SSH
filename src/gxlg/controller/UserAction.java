@@ -107,6 +107,7 @@ public class UserAction extends ActionSupport {
 		System.out.println(u);
 		if (u!=null) {
 			Map<String,Object> session = ActionContext.getContext().getSession();
+			session.put("user.username", u.getUsername());
 			session.put("user.password", u.getPassword());
 			return "toretake";
 		}else{

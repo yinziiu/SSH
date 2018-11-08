@@ -8,6 +8,6 @@
 <title>找回密码</title>
 </head>
 <body>
-	<h1><s:property value="#session['user.username']" />恭喜您找密码，您的密码是: <s:property value="#session['user.password']" /></h1>
+	<h1><s:property value="#session['user.username']"/>恭喜您找密码，您的密码是: <s:property value="#session['user.password']" /></h1>
 </body>
 </html>
